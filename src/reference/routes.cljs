@@ -31,8 +31,7 @@
       (res)))
 
 (def routes
-  ["/" {:get home}]
-  )
+  ["/" {:get home}])
 
 (defn router [req res raise]
   (if-let [{:keys [handler route-params]} (bidi/match-route* routes (:uri req) req)]

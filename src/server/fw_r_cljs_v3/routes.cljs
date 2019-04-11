@@ -3,7 +3,7 @@
    [bidi.bidi :as bidi]
    [hiccups.runtime]
    [macchiato.util.response :as r]
-   [test.fw_r_cljs_v3.test-ns :as home]
+   [serv.html :as serveHtml]
    )
   (:require-macros
     [hiccups.core :refer [html]]))
@@ -18,9 +18,8 @@
       (res)))
 
 (def routes
-  ["/" {:get home/home}]
+  ["/" {:get serveHtml/homepage}]
   ;; ["/index" {:get serveHtml}]
-  
   )
 
 (defn router [req res raise]
