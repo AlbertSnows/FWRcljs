@@ -3,7 +3,7 @@ Flower Website /w Router setup using Clojurescript
 
 Enviroment uses Leiningen + Figwheel in Macchiato 
 
-Currently I used 
+Currently I use
 
 lein build
 
