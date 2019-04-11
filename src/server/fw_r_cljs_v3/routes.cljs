@@ -4,6 +4,8 @@
    [hiccups.runtime]
    [macchiato.util.response :as r]
    [serv.html :as serveHtml]
+   [serv.serve-image :as serveImage]
+   [serv.serve-stylesheet :as serveStylesheet]
    )
   (:require-macros
     [hiccups.core :refer [html]]))
@@ -20,8 +22,8 @@
 (def routes
   ["/" {:get serveHtml/homepage} 
    "/index" {:get serveHtml/homepage}
-   "/css/:filename" {:get not-found}
-   "/images/:filename" {:get not-found}]
+   "/css/:filename" {:get serveStylesheet/serveStylesheet}
+   "/images/:filename" {:get serveImage/serveImage}]
   )
 
 (defn router [req res raise]
