@@ -18,8 +18,10 @@
       (res)))
 
 (def routes
-  ["/" {:get serveHtml/homepage}]
-  ;; ["/index" {:get serveHtml}]
+  ["/" {:get serveHtml/homepage} 
+   "/index" {:get serveHtml/homepage}
+   "/css/:filename" {:get not-found}
+   "/images/:filename" {:get not-found}]
   )
 
 (defn router [req res raise]
