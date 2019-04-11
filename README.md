@@ -7,8 +7,8 @@ Currently I use
 ```
 lein build
 ```
-and then 
+and then in a different terminal
 ```
-npm start``` (in a different terminal) 
-
+npm start
+```
 to run the project. 
