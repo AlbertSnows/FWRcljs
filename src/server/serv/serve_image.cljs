@@ -13,7 +13,7 @@
 ;  @param {http.ServerResponse} res - the HTTP response object
 
 (defn image-response [accept-value res]  
-  (print accept-value "goodbye!" res)
+  ;(print accept-value "goodbye!" res)
   (let [accept-map
         {accept-value (js-join "./src/public" accept-value)}]
     (-> (r/file (get accept-map accept-value serve404/serve404))
@@ -21,7 +21,7 @@
         (res))))
 
 (defn serveImage [req res raise]
-  (let [accept-value (string/lower-case 
+  (let [accept-value (string/lower-case
                       (get-in req [:uri]))]
     (image-response accept-value res)))
 
