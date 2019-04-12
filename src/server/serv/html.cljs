@@ -35,7 +35,7 @@
        [:html :lang "en"
         [:head
          [:meta {:content "text/html;charset=utf-8" :http-equiv "Content-Type"}]
-         [:link {:rel "stylesheet" :type "text/css" :href "main.css"}]
+         [:link {:rel "stylesheet" :type "text/css" :href "/css/main.css"}]
          [:title "My Website"]
     ] ;head
         [:body {:class "background mexico"}
