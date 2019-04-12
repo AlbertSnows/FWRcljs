@@ -27,19 +27,22 @@
 (def routes
   ["" (array-map 
        "/" {:get serveHtml/homepage}
+       "index" {:get serveHtml/homepage}
        "images" {:get serveImage/serveImage}
+       "css" {:get serveStylesheet/serveStylesheet}
        )])
 
-; (def routes
-;   ["/" {:get l-serve-image} ]
-;    "/index" {:get serveHtml/homepage}
-;    "/css/main.css" {:get serveStylesheet/tester}
-;    "/images/:filename" {:get l-serve-image}]
-;   )
 (defn get-dir [req-uri]
+  (let [eval (second (string/split req-uri #"/"))]
+    (if (= req-uri "/")
+     "/" eval)))
+
+
+
   ;(print "uri: " req-uri) 
   ;(def req-dir(second (string/split req-uri #"/")))
-  (second (string/split req-uri #"/")));(print "dir: " req-dir))
+  
+;(print "dir: " req-dir))
 
 (defn router [req res raise]
   (let [req-dir (get-dir (:uri req))]

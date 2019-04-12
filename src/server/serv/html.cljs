@@ -5,34 +5,29 @@
      [hiccups.core :refer [html]]))
 ; rewrite html in clojure
 ; use templates to import html 
-; (def fs (js/require "fs"))
-; (def recipePath (.join js/__dirname "../../../" "src/data" "recipes.json"))
-; (def cardData (.parse js/JSON (.readFileSync fs recipePath)))
-; ; @function generateCardHTML
-; ;  Generates a HTML string array representing the cards
-; ;  @returns {string[]} Array of HTML strings
+(def fs (js/require "fs"))
+(def js-join (.-join (js/require "path")))
+(def recipePath (js-join js/__dirname "../../../" "src/data" "recipes.json"))
+(def cardData (.parse js/JSON (.readFileSync fs recipePath)))
+(js->clj cardData)
+(js->clj :keywordize-keys true) 
+; @function generateCardHTML
+;  Generates a HTML string array representing the cards
+;  @returns {string[]} Array of HTML strings
 ; (defn generateCardHTML
 ;   []
-;   (.join
-;    (.map
-;     cardData
-;     (fn [card]
-;       (str
-;        "<:a :class \"card\" href= \"./"
-;        (aget (.-images card) 0)
-;        "\"><image src= \"/images/"
-;        (aget (.-images card) 0)
-;        "\" alt= \"thumbnail\"><span>"
-;        (.-name card)
-;        "</span><span>"
-;        (.-price card)
-;        "<span></a>")))
-;    ""))
+;   (js-join
+;    (map cardData
+;     (-> [card]
+;       (html
+;        [:a {class="card" href="${data.url}"}]
+;        [:img {src= "images/${data.filename}" alt= "thumbnail"}]
+;        [:span {data.comments.length} "Comments"]]))
 
 (defn homepage [req res raise]
   (-> (html
        ; [:!doctype {html}]
-       [:html :lang "en"
+       [:html {:lang "en"}
         [:head
          [:meta {:content "text/html;charset=utf-8" :http-equiv "Content-Type"}]
          [:link {:rel "stylesheet" :type "text/css" :href "/css/main.css"}]
@@ -91,8 +86,8 @@
           ] ; nav
       ] ; header
          [:main
-          [:div :id "home-page-div"
-            ; ${generateCardHTML()}
+          [:div {:id "home-page-div"}
+           ; (generateCardHTML)
            ]
           [:div {:id "privacy-div"}
            [:head
@@ -245,13 +240,13 @@
              ]
             [:div {:class "footer-social"}
              [:a {:href "https://www.facebook.com/KistnersFlowers1946/?fref=ts" :target "_blank"}
-              [:img {:src "facebookGold.png" :alt "IMG" :width "25" :height "25"}]
+              [:img {:src "/images/facebookGold.png" :alt "IMG" :width "25" :height "25"}]
               ]
              [:a {:href "https://www.instagram.com/kistnersflowers/" :target "_blank"}
-              [:img {:src "instagramGold.png" :alt "IMG" :width "25" :height "25"}]
+              [:img {:src "/images/instagramGold.png" :alt "IMG" :width "25" :height "25"}]
               ]
              [:a {:href "https://www.pinterest.com/kistnersflowers/boards/" :target "_blank"}
-              [:img {:src "pinterestGold.png" :alt "IMG" :width "25" :height "25"}]
+              [:img {:src "/images/pinterestGold.png" :alt "IMG" :width "25" :height "25"}]
               ]
              ]
               ] ; div footer contract

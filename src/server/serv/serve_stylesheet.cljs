@@ -1,26 +1,25 @@
-(ns serv.serve-stylesheet)
+(ns serv.serve-stylesheet  
+  (:require 
+   [clojure.string :as string]
+   [serv.serve-404 :as serve404]
+   [macchiato.util.response :as r]))
 (def fs (js/require "fs"))
-(def join (.-join (js/require "path")))
+(def js-join (.-join (js/require "path")))
 
 ; @function serveStylesheet
 ; Serves the specified css file as an HTTP response.
 ; @param {http.IncomingMessage} req - the HTTP request object
 ; @param {http.ServerResponse} res - the HTTP response object
+(defn style-response [accept-value res]
+  ;(print accept-value "goodbye!" res)
+  (let [accept-map
+        {accept-value (js-join "./src/public" accept-value)}]
+    (-> (r/file (get accept-map accept-value serve404/serve404))
+        ; (r/content-type accept-value)
+        (res))))
 
-
-; (defn serveStylesheet [req res]
-;   (.readFile fs
-;     (.join "./public/css/" (.. req -params -filename))
-;     (fn [err data]
-;     (when-not err
-;       (.setHeader res "Content-Type" "text/css")
-;       (.end res data)))
-;     (when err
-;       (.error js/console err)
-;       (set! (.-statusCode res) 500)
-;       (set! (.-statusMessage res) "Server Error")
-;       (.end res))))
-
-; Export the serveStylesheet function
-;(set! (.-exports module) serveStylesheet)
+(defn serveStylesheet [req res raise]
+  (let [accept-value (string/lower-case
+                      (get-in req [:uri]))]
+    (style-response accept-value res)))
 
