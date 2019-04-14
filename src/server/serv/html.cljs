@@ -1,6 +1,7 @@
 (ns serv.html
   (:require    
-   [macchiato.util.response :as r])
+   [macchiato.util.response :as r]
+   [serv.serve-image :as serveImage])
     (:require-macros
      [hiccups.core :refer [html]]))
 ; rewrite html in clojure
@@ -10,19 +11,22 @@
 (def recipePath (js-join js/__dirname "../../../" "src/data" "recipes.json"))
 (def cardData (.parse js/JSON (.readFileSync fs recipePath)))
 (js->clj cardData)
-(js->clj :keywordize-keys true) 
+(js->clj :keywordize-keys true)
+
 ; @function generateCardHTML
 ;  Generates a HTML string array representing the cards
 ;  @returns {string[]} Array of HTML strings
-; (defn generateCardHTML
-;   []
-;   (js-join
-;    (map cardData
-;     (-> [card]
-;       (html
-;        [:a {class="card" href="${data.url}"}]
-;        [:img {src= "images/${data.filename}" alt= "thumbnail"}]
-;        [:span {data.comments.length} "Comments"]]))
+;(map print cardData)
+;(map print (first (nth (peek cardData) 3)))
+
+; (def mapData
+;   (html
+;        [:a {:class "card" :href "${cardData.url}"}]
+;        [:img {:src (serveImage/serveImage (js-join "images/" "banner.jpg"))) "good" "idk what raise is") :alt "thumbnail"}]
+;        [:span "$cardData.comments.length" "Comments"]))
+
+; (def generateCardHTML
+;   (js-join (map (mapData) cardData)))
 
 (defn homepage [req res raise]
   (-> (html
@@ -92,7 +96,7 @@
           [:div {:id "privacy-div"}
            [:head
             [:meta {:content "text/html;charset=utf-8" :http-equiv "Content-Type"}]
-            [:link {:rel "stylesheet" :type "text/css" :href "main.css"}]
+            [:link {:rel "stylesheet" :type "text/css" :href "/css/main.css"}]
             [:title "My Website"]
           ] ; head
            [:body {:class "background mexico"}

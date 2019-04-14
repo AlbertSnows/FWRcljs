@@ -34,15 +34,7 @@
 
 (defn get-dir [req-uri]
   (let [eval (second (string/split req-uri #"/"))]
-    (if (= req-uri "/")
-     "/" eval)))
-
-
-
-  ;(print "uri: " req-uri) 
-  ;(def req-dir(second (string/split req-uri #"/")))
-  
-;(print "dir: " req-dir))
+    (if (= req-uri "/") "/" eval)))
 
 (defn router [req res raise]
   (let [req-dir (get-dir (:uri req))]
