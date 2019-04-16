@@ -16,48 +16,31 @@
 (def convertedCardData (map js->clj cardData))
 (defn convertToCljDS [DS]
   (map first (map val (map last (into '[] DS)))))
-(def cljDS (convertToCljDS convertedCardData))
-; (print (first (val (last (first convertedCardData)))))
-; (print (type (first (val (last (first convertedCardData))))))
+(def cljsDS (convertToCljDS convertedCardData))
+(def better-DS (apply list convertedCardData))
+; (print better-DS)
+; (print (type better-DS))
+; (print (first better-DS))
+; (print (type (first better-DS)))
+
 ; @function generateCardHTML
 ;  Generates a HTML string array representing the cards
 ;  @returns {string[]} Array of HTML strings
-(defn mapData [req]
-  [:img
-   {:src (str req) :alt "IMG" }])
+(defn mapData [req name price]
+[:a {:class "card" :href  (str req)} ; link
+ [:img
+  {:src (str req) :alt "IMG"}]
+ [:span "Name: " (str name) ]
+ [:span "Price: " (str price)]
+ [:span "Comments: " "?"]] 
+  )
+
 (defn generateCardHTML [req]
   (for [elem req]
-    (mapData (js-join "/images/" elem))))
-(def code-to-insert (generateCardHTML cljDS))
-; (print code-to-insert)
-; (print (type code-to-insert))
-; (print (type (first code-to-insert)))
-; (def derp (string/replace (first code-to-insert) #"\\" "/"))
-; (print (second (first code-to-insert)))
-
-;(def type-test "[:img {:src '/images/T55-2A-1.jpg', :alt 'IMG'}]")
-;(print type-test)
-;(print (first code-to-insert))
-;(def string-convert (into '[] type-test))
-;(print string-convert)
-;(print (type (first code-to-insert))) => string
-; (print (doseq [x code-to-insert] 
-;          (when-not 
-;           (= x nil) 
-;            (print x))))
-; (defn do-thing []
-;   (when-not
-;    (let [x (first code-to-insert)]     
-;      (= (first code-to-insert) nil)
-;      (pop code-to-insert)
-;      (x)
-;      )))
-; (def test-DS (list (vector :img {:src "/images/T55-2A-1.jpg", :alt 'IMG'})))
-
+    (mapData (js-join "/images/" (first (val (last elem)))) (val (first elem)) (val (second elem)))))
+(def code-to-insert (generateCardHTML better-DS))
 (def non-lazy-seq (apply list code-to-insert))
-(print non-lazy-seq)
-(print (type non-lazy-seq))
-(print (type (first non-lazy-seq)))
+
 
 (defn homepage [req res raise]
   (-> (html

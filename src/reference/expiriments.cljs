@@ -24,3 +24,12 @@
            (bidi/match-route* (eval-req req res) (:uri req) req)]
     (handler (assoc req :route-params route-params) res raise)
     (not-found req res raise)))
+
+(str
+ "\n      <a class=\"card\" href=\""
+ (.-url data)
+ "\">\n        <img src=\"images/"
+ (.-filename data)
+ "\" alt=\"thumbnail\">\n        <span>"
+ (.. data -comments -length)
+ " Comments</span>\n      </a>\n    ")
