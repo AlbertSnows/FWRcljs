@@ -11,13 +11,22 @@
                  [org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.439"]
                  ;; needed for JDK 9 compatibility
-                 [javax.xml.bind/jaxb-api "2.3.0"]]
+                 [javax.xml.bind/jaxb-api "2.3.0"]
+                 [cider/cider-nrepl "0.19.0"]
+                 [nrepl "0.6.0"]
+                 [cider/piggieback "0.4.0"]
+                 [figwheel-sidecar "0.5.18"]]
+:repl-options {
+               :nrepl-middleware 
+               [cider.piggieback/wrap-cljs-repl]
+               :timeout 120000}
   :min-lein-version "2.0.0"
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
   :plugins [[lein-doo "0.1.7"]
             [macchiato/lein-npm "0.6.4"]
             [lein-figwheel "0.5.17"]
-            [lein-cljsbuild "1.1.7"]]
+            [lein-cljsbuild "1.1.7"]
+            [cider/cider-nrepl "0.21.2-SNAPSHOT"]]
   :npm {:dependencies [[source-map-support "0.4.6"]]
         :write-package-json true}
   :source-paths ["src/server" "target/classes"]
@@ -40,9 +49,7 @@
                                :optimizations :none
                                :pretty-print  true
                                :source-map    true
-                               :source-map-timestamp false
-                               }}}
-      }
+                               :source-map-timestamp false}}}}
      :figwheel
      {:http-server-root "public"
       :nrepl-port 7000
@@ -75,8 +82,7 @@
                       :language-in   :ecmascript5
                       :target        :nodejs
                       :optimizations :simple
-                      :pretty-print  false}}
-      }}}}
+                      :pretty-print  false}}}}}}
   :aliases
   {"build" ["do"
             ["clean"]
@@ -86,8 +92,7 @@
               ["clean"]
               ["npm" "install"]
               ["with-profile" "release" "npm" "init" "-y"]
-              ["with-profile" "release" "cljsbuild" "once" "release"]
-]
+              ["with-profile" "release" "cljsbuild" "once" "release"]]
    "test" ["do"
            ["npm" "install"]
            ["with-profile" "test" "doo" "node"]]})
