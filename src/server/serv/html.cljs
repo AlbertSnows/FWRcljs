@@ -1,7 +1,8 @@
 (ns serv.html
   (:require    
    [macchiato.util.response :as r]
-   [serv.serve-image :as serveImage])
+   [serv.serve-image :as serveImage]
+   [clojure.string :as string])
     (:require-macros
      [hiccups.core :refer [html]]))
 ; rewrite html in clojure
@@ -10,23 +11,53 @@
 (def js-join (.-join (js/require "path")))
 (def recipePath (js-join js/__dirname "../../../" "src/data" "recipes.json"))
 (def cardData (.parse js/JSON (.readFileSync fs recipePath)))
-(js->clj cardData)
+(js->clj (-> cardData js/JSON.stringify js/JSON.parse))
 (js->clj :keywordize-keys true)
-
+(def convertedCardData (map js->clj cardData))
+(defn convertToCljDS [DS]
+  (map first (map val (map last (into '[] DS)))))
+(def cljDS (convertToCljDS convertedCardData))
+; (print (first (val (last (first convertedCardData)))))
+; (print (type (first (val (last (first convertedCardData))))))
 ; @function generateCardHTML
 ;  Generates a HTML string array representing the cards
 ;  @returns {string[]} Array of HTML strings
-;(map print cardData)
-;(map print (first (nth (peek cardData) 3)))
+(defn mapData [req]
+  [:img
+   {:src (str req) :alt "IMG" }])
+(defn generateCardHTML [req]
+  (for [elem req]
+    (mapData (js-join "/images/" elem))))
+(def code-to-insert (generateCardHTML cljDS))
+; (print code-to-insert)
+; (print (type code-to-insert))
+; (print (type (first code-to-insert)))
+; (def derp (string/replace (first code-to-insert) #"\\" "/"))
+; (print (second (first code-to-insert)))
 
-; (def mapData
-;   (html
-;        [:a {:class "card" :href "${cardData.url}"}]
-;        [:img {:src (serveImage/serveImage (js-join "images/" "banner.jpg"))) "good" "idk what raise is") :alt "thumbnail"}]
-;        [:span "$cardData.comments.length" "Comments"]))
+;(def type-test "[:img {:src '/images/T55-2A-1.jpg', :alt 'IMG'}]")
+;(print type-test)
+;(print (first code-to-insert))
+;(def string-convert (into '[] type-test))
+;(print string-convert)
+;(print (type (first code-to-insert))) => string
+; (print (doseq [x code-to-insert] 
+;          (when-not 
+;           (= x nil) 
+;            (print x))))
+; (defn do-thing []
+;   (when-not
+;    (let [x (first code-to-insert)]     
+;      (= (first code-to-insert) nil)
+;      (pop code-to-insert)
+;      (x)
+;      )))
+; (def test-DS (list (vector :img {:src "/images/T55-2A-1.jpg", :alt 'IMG'})))
 
-; (def generateCardHTML
-;   (js-join (map (mapData) cardData)))
+(def non-lazy-seq (apply list code-to-insert))
+(print non-lazy-seq)
+(print (type non-lazy-seq))
+(print (type (first non-lazy-seq)))
 
 (defn homepage [req res raise]
   (-> (html
@@ -91,62 +122,62 @@
       ] ; header
          [:main
           [:div {:id "home-page-div"}
-           ; (generateCardHTML)
+           (doall non-lazy-seq)
            ]
-          [:div {:id "privacy-div"}
-           [:head
-            [:meta {:content "text/html;charset=utf-8" :http-equiv "Content-Type"}]
-            [:link {:rel "stylesheet" :type "text/css" :href "/css/main.css"}]
-            [:title "My Website"]
+           [:div {:id "privacy-div"}
+            [:head
+             [:meta {:content "text/html;charset=utf-8" :http-equiv "Content-Type"}]
+             [:link {:rel "stylesheet" :type "text/css" :href "/css/main.css"}]
+             [:title "My Website"]
           ] ; head
-           [:body {:class "background mexico"}
-            [:p
-             [:h1
-              "Substitution Policy"
-              ]
+            [:body {:class "background mexico"}
              [:p
-              "Occasionally, substitutions may be necessary to create your bouquet due to the
+              [:h1
+               "Substitution Policy"
+               ]
+              [:p
+               "Occasionally, substitutions may be necessary to create your bouquet due to the
                         availability of certain flowers in various parts of the country. Care is taken to
                          maintain the style, theme and color scheme of the arrangement, using flowers of equal
                          value. Additionally, the substitution of certain keepsake items may be necessary due to
                           increased demand, especially during major holidays. In single-flower arrangements,
                           such as an all rose bouquet, or orchids, we will make every attempt to match the
                           flower type, but may substitute with another color."
-              ]
-             [:h1
-              "Privacy Policy"
-              ]
-             [:p
-              "This privacy statement has been created in order to demonstrate our firm commitment to protecting customer privacy."
-              ]
-             [:h2
-              "Information We Collect"
-              ]
-             [:p
-              "If you open an account on our site or make a purchase, we need your contact information
+               ]
+              [:h1
+               "Privacy Policy"
+               ]
+              [:p
+               "This privacy statement has been created in order to demonstrate our firm commitment to protecting customer privacy."
+               ]
+              [:h2
+               "Information We Collect"
+               ]
+              [:p
+               "If you open an account on our site or make a purchase, we need your contact information
                          including your name, e-mail address and mailing address to complete your transaction."
-              ]
-             [:p
-              "When you visit our website, we also collect some basic information that does not
+               ]
+              [:p
+               "When you visit our website, we also collect some basic information that does not
                         identify individual users. We use this information to determine our users demographics
                          and interests, so that we can better understand and serve our users."]
-             [:h2
-              "Cookies"
-              ]
-             [:p
-              "Cookies are small files which store certain information about your activity on the
+              [:h2
+               "Cookies"
+               ]
+              [:p
+               "Cookies are small files which store certain information about your activity on the
                         website and are stored on your computers hard drive. Our cookies do not contain any
                          personally identifying information. We use cookies to let us know that you are a prior
                           customer, so that you dont have to reenter information you gave us on your prior
                            visits. Most web browsers automatically accept cookies, but most allow you to
                             instruct your browser to prevent the use of cookies. However, if you disable
                              cookies, you will not be able to use certain features of this website."
-              ]
-             [:p
-              "Our Use and Disclosure of Your Information"
-              ]
-             [:p
-              "When opening an account or making a purchase, you have an opportunity to opt-in or
+               ]
+              [:p
+               "Our Use and Disclosure of Your Information"
+               ]
+              [:p
+               "When opening an account or making a purchase, you have an opportunity to opt-in or
                          opt-out from receiving emails from us. If you opt-in to receive information from us,
                           we may use your purchase history, contact information and other registration
                            information to provide you with more relevant information and email content. We
@@ -154,26 +185,26 @@
                              we believe will be of interest to our users. If you prefer not to receive these
                               emails, you can send us an email with the subject line no emails or reply to our
                                email with the subject line no emails."
-              ]
-             [:p
-              "If you send us personal correspondence, such as emails or letters, or if other users or
+               ]
+              [:p
+               "If you send us personal correspondence, such as emails or letters, or if other users or
                          third parties send us correspondence about your activities on our site, we may collect
                           such information. We may use that information and other information that we obtain
                            from your use of our site to resolve disputes, troubleshoot problems and enforce our agreement for Terms of Use."
-              ]
-             [:p
-              "We may share aggregate statistics about our sales, traffic patterns and related site
+               ]
+              [:p
+               "We may share aggregate statistics about our sales, traffic patterns and related site
                          information with other businesses, but these statistics will include no personally
                           identifying information."
-              ]
-             [:p
-              "We may share your information with Teleflora and other reputable vendors for the purpose
+               ]
+              [:p
+               "We may share your information with Teleflora and other reputable vendors for the purpose
                          of sending out special offers via email and/ or in connection with the services
                           provided by our site such as the delivery of flowers. Your information will not be
                            shared for any other purpose and will be kept secured."
-              ]
-             [:p
-              "We cannot ensure that all of your private communications and other personally
+               ]
+              [:p
+               "We cannot ensure that all of your private communications and other personally
                          identifiable information will never be disclosed in ways not otherwise described in
                           this Privacy Statement. For example, we may be required to disclose information to
                            the government or third parties under certain circumstances, or third parties may
@@ -182,48 +213,48 @@
                                   other government officials as we, in our sole discretion, believe necessary
                                    or appropriate in connection with an investigation of fraud, intellectual
                                     property infringements, or other activity that may be illegal or may expose us to legal liability."
-              ]
-             [:h2
-              "Security"
-              ]
-             [:p
-              "This site has security measures in place to protect the loss, misuse and alteration of
+               ]
+              [:h2
+               "Security"
+               ]
+              [:p
+               "This site has security measures in place to protect the loss, misuse and alteration of
                          the information under our control."
-              ]
-             [:p
-              "All user credit card information is securely communicated using secure socket layer
+               ]
+              [:p
+               "All user credit card information is securely communicated using secure socket layer
                          (SSL) software, which is the industry standard and among the best software available
                           for secure commerce transactions."
-              ]
-             [:p
-              "All user information stored on our server is stored in an encrypted format.
+               ]
+              [:p
+               "All user information stored on our server is stored in an encrypted format.
                          Notwithstanding these efforts, we caution you that perfect security does not exist on the Internet."
-              ]
-             [:h2
-              "Linked Sites"
-              ]
-             [:p
-              "If this site contains any links to other websites, we are not responsible for the
+               ]
+              [:h2
+               "Linked Sites"
+               ]
+              [:p
+               "If this site contains any links to other websites, we are not responsible for the
                          privacy practices or the content of such websites."
-              ]
-             [:h2
-              "Changes to Privacy Statement; Consent"
-              ]
-             [:p
-              "We may update this Privacy Statement from time to time. You should check this page
+               ]
+              [:h2
+               "Changes to Privacy Statement; Consent"
+               ]
+              [:p
+               "We may update this Privacy Statement from time to time. You should check this page
                              periodically for changes. By using our site, you consent to the collection and use
                               of your information by us as described in this Privacy Statement."
-              ]
-             [:h2
-              "Questions and Comments"
-              ]
-             [:p
-              "We welcome your questions and comments about this Privacy Statement."
+               ]
+              [:h2
+               "Questions and Comments"
+               ]
+              [:p
+               "We welcome your questions and comments about this Privacy Statement."
                     ] ; p
             ] ; p
             ] ; body
         ]; div 
-      ] ; main
+           ] ; main
          [:footer {:class "footer"}
           [:div {:id "footer-content"}
            [:div {:id "footer-contact"}
