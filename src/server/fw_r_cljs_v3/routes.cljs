@@ -6,8 +6,7 @@
    [macchiato.util.response :as r]
    [serv.html :as serveHtml]
    [serv.serve-image :as serveImage]
-   [serv.serve-stylesheet :as serveStylesheet]
-   )
+   [serv.serve-stylesheet :as serveStylesheet])
   (:require-macros
     [hiccups.core :refer [html]]))
 (def fs (js/require "fs"))
